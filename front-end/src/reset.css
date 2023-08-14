@@ -1,0 +1,33 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+    font-size: 62.5%;
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 5rem;
+    line-height: 1.6;
+
+    background: antiquewhite;
+
+    height: 100svh;
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: space-between;
+}
+
+h1, h2, h3, h4, h5 {
+    color: black;
+}
