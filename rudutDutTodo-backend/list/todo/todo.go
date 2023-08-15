@@ -41,21 +41,21 @@ func (p *Progress) MakeSureOneOfThree() error {
 }
 
 type Todo struct {
-	mongoID    string
-	postNumber int
-	date       time.Time
-	title      string
-	content    string
-	progress   *Progress
+	MongoID    string
+	PostNumber int
+	Date    time.Time
+	Title    string
+	Content  string
+	Progress *Progress
 }
 
 func NewTodo(postNumber int, date time.Time, id, title, content string) *Todo {
 	return &Todo{
-		mongoID:    id,
-		postNumber: postNumber,
-		date:       date,
-		title:      title,
-		content:    content,
-		progress:   NewProgress(),
+		MongoID:    id,
+		PostNumber: postNumber,
+		Date:       date,
+		Title:      title,
+		Content:    content,
+		Progress:   NewProgress(),
 	}
 }
