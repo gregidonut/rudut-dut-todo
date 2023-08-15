@@ -49,7 +49,9 @@ func TestPingMongo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := contact.PingMongo(tt.args.uri)
+			// client return val here is unnecessary since ping just returns it and
+			// does nothing to it anyway
+			_, err := contact.PingMongo(tt.args.uri)
 			if tt.wantErr {
 				if err == nil {
 					t.Fatalf("expected err: %q, but didn't get one\n", tt.expectedErr)
