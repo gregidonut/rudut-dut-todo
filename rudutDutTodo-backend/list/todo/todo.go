@@ -1,5 +1,7 @@
 package todo
 
+import "time"
+
 type Progress struct {
 	Todo       bool
 	InProgress bool
@@ -41,13 +43,13 @@ func (p *Progress) MakeSureOneOfThree() error {
 type Todo struct {
 	mongoID    string
 	postNumber int
-	date       string
+	date       time.Time
 	title      string
 	content    string
 	progress   *Progress
 }
 
-func NewTodo(postNumber int, id, title, content, date string) *Todo {
+func NewTodo(postNumber int, date time.Time, id, title, content string) *Todo {
 	return &Todo{
 		mongoID:    id,
 		postNumber: postNumber,

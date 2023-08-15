@@ -4,6 +4,7 @@ import (
 	"github.com/gregidonut/rudut-dut-todo/rudutDutTodo-backend/list/todo"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestNewProgress(t *testing.T) {
@@ -132,10 +133,10 @@ func TestProgress_makeSureOneOfThree(t *testing.T) {
 func TestNewTodo(t *testing.T) {
 	type args struct {
 		postNumber int
+		date       time.Time
 		id         string
 		title      string
 		content    string
-		date       string
 	}
 	tests := []struct {
 		name string
@@ -146,7 +147,8 @@ func TestNewTodo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := todo.NewTodo(tt.args.postNumber, tt.args.id, tt.args.title, tt.args.content, tt.args.date); !reflect.DeepEqual(got, tt.want) {
+			got := todo.NewTodo(tt.args.postNumber, tt.args.date, tt.args.id, tt.args.title, tt.args.content)
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewTodo() = %v, want %v", got, tt.want)
 			}
 		})
