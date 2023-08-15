@@ -62,6 +62,36 @@ func TestProgress_makeSureOneOfThree(t *testing.T) {
 			wantErr:     true,
 			expectedErr: todo.MoreThanOneStateErr,
 		},
+		{
+			name: "OnlyFinishedIsTrue",
+			fields: fields{
+				todo:       false,
+				inProgress: false,
+				finished:   true,
+			},
+			wantErr:     false,
+			expectedErr: nil,
+		},
+		{
+			name: "FinishedAndInProgIsTrue",
+			fields: fields{
+				todo:       false,
+				inProgress: true,
+				finished:   true,
+			},
+			wantErr:     true,
+			expectedErr: todo.MoreThanOneStateErr,
+		},
+		{
+			name: "TodoAndFinishedIsTrue",
+			fields: fields{
+				todo:       true,
+				inProgress: false,
+				finished:   true,
+			},
+			wantErr:     true,
+			expectedErr: todo.MoreThanOneStateErr,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -73,17 +103,27 @@ func TestProgress_makeSureOneOfThree(t *testing.T) {
 			err := p.MakeSureOneOfThree()
 			if tt.wantErr {
 				if err == nil {
-					t.Fatalf("expected err: %q, but didn't get one", tt.expectedErr)
+					t.Fatalf(
+						"expected err: %q, but didn't get one\n",
+						tt.expectedErr,
+					)
 				}
 
 				if tt.expectedErr != err {
-					t.Fatalf("expected err: %q, but got different err: %q", tt.expectedErr, err)
+					t.Fatalf(
+						"expected err: %q, but got different err: %q\n",
+						tt.expectedErr,
+						err,
+					)
 				}
 
 				return
 			}
 			if err != nil {
-				t.Fatalf("did not expect err but got: %q", err)
+				t.Fatalf(
+					"did not expect err but got: %q\n",
+					err,
+				)
 			}
 		})
 	}
