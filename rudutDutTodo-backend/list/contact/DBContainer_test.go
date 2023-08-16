@@ -32,10 +32,23 @@ func TestNewDBContainer(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "dbname is misssing",
+			name: "dbname is missing",
 			args: args{
 				DBName:         "",
 				collectionName: "test-date-docs",
+			},
+			want: &contact.DBContainer{
+				DBName:         "test",
+				CollectionName: "test-date-docs",
+			},
+			wantErr:     true,
+			expectedErr: contact.MissingDBInfoErr,
+		},
+		{
+			name: "collection name is missing",
+			args: args{
+				DBName:         "test",
+				collectionName: "",
 			},
 			want: &contact.DBContainer{
 				DBName:         "test",
