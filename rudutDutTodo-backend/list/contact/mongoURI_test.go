@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetMongoUriFromEnv(t *testing.T) {
-	mongoURIs, err := setupURIs()
+	mongoURIs, err := localJsonToStruct()
 	if err != nil {
 		t.Fatalf("having trouble setting up mongoURIs: %q", err)
 	}
