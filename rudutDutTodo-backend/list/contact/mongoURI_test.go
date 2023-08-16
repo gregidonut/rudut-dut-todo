@@ -15,7 +15,6 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		setupEnvVar bool
 		envVarValue string
 		want        *contact.MongoURI
 		wantErr     bool
@@ -23,7 +22,6 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 	}{
 		{
 			name:        "env var is not declared",
-			setupEnvVar: false,
 			envVarValue: "",
 			want:        nil,
 			wantErr:     true,
@@ -31,7 +29,6 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 		},
 		{
 			name:        "env var is local testDB",
-			setupEnvVar: true,
 			envVarValue: mongoHandles.DBs[0].Info.URI,
 			want:        &testDBURI,
 			wantErr:     false,
@@ -39,7 +36,6 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 		},
 		{
 			name:        "env var is local todoListDB",
-			setupEnvVar: true,
 			envVarValue: mongoHandles.DBs[1].Info.URI,
 			want:        &todoListDBURI,
 			wantErr:     false,
@@ -48,9 +44,8 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.setupEnvVar {
-				setupEnvVar(t, tt.envVarValue)
-			}
+			setupEnvVar(t, tt.envVarValue)
+
 			got, err := contact.GetMongoUriFromEnv()
 			if tt.wantErr {
 				if err == nil {
