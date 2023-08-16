@@ -1,6 +1,8 @@
 package contact
 
-import "os"
+import (
+	"os"
+)
 
 const (
 	MONGO_URI_ENV_VAR = "MONGO_URI"
@@ -21,4 +23,20 @@ func GetMongoUriFromEnv() (*MongoURI, error) {
 	}
 
 	return &mongoUri, nil
+}
+
+type DBContainer struct {
+	DBName         string
+	CollectionName string
+}
+
+func NewDBContainer(DBName, collectionName string) (*DBContainer, error) {
+	if DBName == "" || collectionName == "" {
+		return &DBContainer{}, MissingDBInfoErr
+	}
+
+	return &DBContainer{
+		DBName:         DBName,
+		CollectionName: collectionName,
+	}, nil
 }
