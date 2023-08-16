@@ -2,17 +2,16 @@ package contact_test
 
 import (
 	"github.com/gregidonut/rudut-dut-todo/rudutDutTodo-backend/list/contact"
-	"os"
 	"testing"
 )
 
 func TestGetMongoUriFromEnv(t *testing.T) {
-	mongoURIs, err := localJsonToStruct()
+	mongoHandles, err := localJsonToStruct()
 	if err != nil {
-		t.Fatalf("having trouble setting up mongoURIs: %q", err)
+		t.Fatalf("having trouble setting up mongoHandles: %q", err)
 	}
-	testDBURI := contact.MongoURI(mongoURIs.TestDBURI)
-	todoListDBURI := contact.MongoURI(mongoURIs.TodoListDBURI)
+	testDBURI := contact.MongoURI(mongoHandles.DBs[0].Info.URI)
+	todoListDBURI := contact.MongoURI(mongoHandles.DBs[1].Info.URI)
 
 	tests := []struct {
 		name        string
@@ -33,7 +32,7 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 		{
 			name:        "env var is local testDB",
 			setupEnvVar: true,
-			envVarValue: mongoURIs.TestDBURI,
+			envVarValue: mongoHandles.DBs[0].Info.URI,
 			want:        &testDBURI,
 			wantErr:     false,
 			expectedErr: nil,
@@ -41,7 +40,7 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 		{
 			name:        "env var is local todoListDB",
 			setupEnvVar: true,
-			envVarValue: mongoURIs.TodoListDBURI,
+			envVarValue: mongoHandles.DBs[1].Info.URI,
 			want:        &todoListDBURI,
 			wantErr:     false,
 			expectedErr: nil,
@@ -50,10 +49,7 @@ func TestGetMongoUriFromEnv(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.setupEnvVar {
-				err := os.Setenv(contact.MONGO_URI_ENV_VAR, tt.envVarValue)
-				if err != nil {
-					t.Fatalf("having trouble setting up env var %q\n", err)
-				}
+				setupEnvVar(t, tt.envVarValue)
 			}
 			got, err := contact.GetMongoUriFromEnv()
 			if tt.wantErr {

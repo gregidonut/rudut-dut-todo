@@ -5,38 +5,47 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gregidonut/rudut-dut-todo/rudutDutTodo-backend/list/contact"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+	"testing"
 )
 
-type mongouriJsonFile struct {
-	DBPath        string `json:"dbPath"`
-	TestDBURI     string `json:"testDB"`
-	TodoListDBURI string `json:"todoListDB"`
+type mongoHandlesJsonFile struct {
+	DBPath string `json:"dbPath"`
+	DBs    []struct {
+		Info struct {
+			URI     string `json:"uri"`
+			Handles []struct {
+				Name        string   `json:"name"`
+				Collections []string `json:"collections"`
+			} `json:"handles"`
+		} `json:"dbInfo"`
+	} `json:"dbs"`
 }
 
-func localJsonToStruct() (mongouriJsonFile, error) {
-	mongoURIJsonFileContents, err := os.ReadFile("./mongouri.json")
-	var mURIJ mongouriJsonFile
+func localJsonToStruct() (mongoHandlesJsonFile, error) {
+	mongoURIJsonFileContents, err := os.ReadFile("./mongohandles.json")
+	var mHJ mongoHandlesJsonFile
 
 	if err != nil {
-		return mURIJ,
+		return mHJ,
 			fmt.Errorf("having trouble opening json mongoURIJsonFileContents: %q\n", err)
 	}
 
-	err = json.Unmarshal(mongoURIJsonFileContents, &mURIJ)
+	err = json.Unmarshal(mongoURIJsonFileContents, &mHJ)
 	if err != nil {
-		return mURIJ,
+		return mHJ,
 			fmt.Errorf("having trouble unmarshalling json mongoURIJsonFileContents: %q\n", err)
 	}
 
-	return mURIJ, nil
+	return mHJ, nil
 }
 
 func spinUpMongoDB() error {
-	mURIJ, err := localJsonToStruct()
+	mHJ, err := localJsonToStruct()
 	if err != nil {
 		return err
 	}
@@ -48,8 +57,8 @@ func spinUpMongoDB() error {
 	spinUpErr := make(chan struct{})
 	go func() {
 		defer wg.Done()
-		fmt.Printf("\t**spinning up instance on path: %s**\n", mURIJ.DBPath)
-		cmd := exec.Command("mongod", "--dbpath", mURIJ.DBPath)
+		fmt.Printf("\t**spinning up instance on path: %s**\n", mHJ.DBPath)
+		cmd := exec.Command("mongod", "--dbpath", mHJ.DBPath)
 
 		stdOut, _ := cmd.StdoutPipe()
 		cmd.Start()
@@ -79,4 +88,11 @@ func spinUpMongoDB() error {
 	}
 
 	return nil
+}
+
+func setupEnvVar(t *testing.T, val string) {
+	err := os.Setenv(contact.MONGO_URI_ENV_VAR, val)
+	if err != nil {
+		t.Fatalf("having trouble setting up env var %q\n", err)
+	}
 }

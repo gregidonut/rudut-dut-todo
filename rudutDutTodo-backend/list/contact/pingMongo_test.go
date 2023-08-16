@@ -12,9 +12,9 @@ func TestPingMongo(t *testing.T) {
 		t.Fatalf("having trouble spinning up MongoDB: %q\n", err)
 	}
 
-	mongoURIs, err := localJsonToStruct()
+	mongoHandles, err := localJsonToStruct()
 	if err != nil {
-		t.Fatalf("having trouble setting up mongoURIs: %q", err)
+		t.Fatalf("having trouble setting up mongoHandles: %q", err)
 	}
 
 	type args struct {
@@ -29,7 +29,7 @@ func TestPingMongo(t *testing.T) {
 		{
 			name: "ping testDB",
 			args: args{
-				uri: contact.MongoURI(mongoURIs.TestDBURI),
+				uri: contact.MongoURI(mongoHandles.DBs[0].Info.URI),
 			},
 			wantErr:     false,
 			expectedErr: nil,
@@ -37,7 +37,7 @@ func TestPingMongo(t *testing.T) {
 		{
 			name: "ping todolistDB",
 			args: args{
-				uri: contact.MongoURI(mongoURIs.TodoListDBURI),
+				uri: contact.MongoURI(mongoHandles.DBs[1].Info.URI),
 			},
 			wantErr:     false,
 			expectedErr: nil,
