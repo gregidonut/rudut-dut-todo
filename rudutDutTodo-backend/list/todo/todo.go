@@ -53,6 +53,11 @@ type Todo struct {
 	Progress   *Progress
 }
 
+func (t *Todo) Unmarshal(v any) error {
+
+	return nil
+}
+
 func NewTodo(object json.RawMessage) (*Todo, error) {
 	var returnVal Todo
 	var aux map[string]interface{}
