@@ -7,11 +7,6 @@ import (
 )
 
 func TestPingMongo(t *testing.T) {
-	err := spinUpMongoDB()
-	if err != nil {
-		t.Fatalf("having trouble spinning up MongoDB: %q\n", err)
-	}
-
 	mongoHandles, err := localJsonToStruct()
 	if err != nil {
 		t.Fatalf("having trouble setting up mongoHandles: %q", err)

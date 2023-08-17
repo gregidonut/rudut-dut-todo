@@ -44,10 +44,12 @@ func localJsonToStruct() (mongoHandlesJsonFile, error) {
 	return mHJ, nil
 }
 
-func spinUpMongoDB() error {
+func spinUpMongoDB() (*os.Process, error) {
+	var mongoProcess *os.Process
+
 	mHJ, err := localJsonToStruct()
 	if err != nil {
-		return err
+		return &os.Process{}, err
 	}
 
 	var lineNumbers int
@@ -62,6 +64,8 @@ func spinUpMongoDB() error {
 
 		stdOut, _ := cmd.StdoutPipe()
 		cmd.Start()
+
+		mongoProcess = cmd.Process
 
 		scanner := bufio.NewScanner(stdOut)
 		for scanner.Scan() {
@@ -82,12 +86,12 @@ func spinUpMongoDB() error {
 	select {
 	case _, ok := <-spinUpErr:
 		if !ok {
-			return errors.New("cannot find strings on `mongod` output")
+			return mongoProcess, errors.New("cannot find strings on `mongod` output")
 		}
 	default:
 	}
 
-	return nil
+	return mongoProcess, nil
 }
 
 func setupEnvVar(t *testing.T, val string) {
