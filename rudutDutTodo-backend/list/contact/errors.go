@@ -7,4 +7,5 @@ var (
 	MongoPingErr              = errors.New("error pinging mongoDb Instance")
 	MissingDBInfoErr          = errors.New("all fields contact.DBContainer must be filled out")
 	MongoContactErr           = errors.New("error contacting mongodb")
+	BsonMToTodoErr            = errors.New("having trouble converting from bson to Todo")
 )
