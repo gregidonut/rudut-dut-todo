@@ -19,8 +19,26 @@ type mongoHandlesJsonFile struct {
 		Info struct {
 			URI     string `json:"uri"`
 			Handles []struct {
-				Name        string   `json:"name"`
-				Collections []string `json:"collections"`
+				Name        string `json:"name"`
+				Collections []struct {
+					CName string `json:"cName"`
+					Items []struct {
+						ID struct {
+							OID string `json:"$oid"`
+						} `json:"_id"`
+						Content string `json:"content"`
+						Date    struct {
+							JSDateObject string `json:"$date"`
+						} `json:"date"`
+						PostID   int `json:"postId"`
+						Progress struct {
+							Todo       bool `json:"todo"`
+							InProgress bool `json:"inProgress"`
+							Finished   bool `json:"finished"`
+						} `json:"progress"`
+						Title string `json:"title"`
+					} `json:"items"`
+				} `json:"collections"`
 			} `json:"handles"`
 		} `json:"dbInfo"`
 	} `json:"dbs"`
