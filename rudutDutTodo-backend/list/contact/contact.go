@@ -72,3 +72,9 @@ func GetList(DBCont DBContainer) ([]todo.Todo, error) {
 
 	return todoResults, nil
 }
+
+// AddTodo is responsible for the Create method of the api
+func AddTodo(todoObj todo.Todo) error {
+
+	return nil
+}
