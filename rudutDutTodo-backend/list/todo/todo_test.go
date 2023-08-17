@@ -3,9 +3,8 @@ package todo_test
 import (
 	"encoding/json"
 	"github.com/gregidonut/rudut-dut-todo/rudutDutTodo-backend/list/todo"
-	"github.com/jaswdr/faker"
-	"math/rand"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -134,73 +133,71 @@ func TestProgress_makeSureOneOfThree(t *testing.T) {
 }
 
 func TestNewTodo(t *testing.T) {
+	testObj := `{
+	"_id": "64ddbdaae24251218972e72f",
+	"content": "a random string of todo Content",
+	"date": "2023-08-17T06:26:50.497Z",
+	"postId": 0,
+	"progress": {
+		"finished": false,
+		"inProgress": false,
+		"todo": true
+	},
+	"title": "this is a test todo item"
+}`
+	dateFromTestObj, err := time.Parse(time.RFC3339, "2023-08-17T06:26:50.497Z")
+	if err != nil {
+		t.Errorf("having throuble parsing date %q\n", dateFromTestObj)
+	}
+
 	type args struct {
-		postNumber int
-		date       time.Time
-		id         string
-		title      string
-		content    string
+		object json.RawMessage
 	}
 	tests := []struct {
-		name string
-		args args
+		name        string
+		args        args
+		want        *todo.Todo
+		wantErr     bool
+		expectedErr error
 	}{
 		{
-			name: "Initial",
+			name: "initial",
 			args: args{
-				postNumber: 0,
-				date:       time.Now(),
-				id:         randStringBytes(16),
-				title:      faker.New().Lorem().Sentence(4),
-				content:    faker.New().Lorem().Paragraph(3),
+				object: json.RawMessage(testObj),
 			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := todo.NewTodo(
-				tt.args.postNumber,
-				tt.args.date,
-				tt.args.id,
-				tt.args.title,
-				tt.args.content,
-			)
-
-			want := &todo.Todo{
-				MongoID:    tt.args.id,
-				PostNumber: tt.args.postNumber,
-				Date:       tt.args.date,
-				Title:      tt.args.title,
-				Content:    tt.args.content,
+			want: &todo.Todo{
+				MongoID:    "64ddbdaae24251218972e72f",
+				PostNumber: 0,
+				Date:       dateFromTestObj,
+				Title:      "this is a test todo item",
+				Content:    "a random string of todo Content",
 				Progress: &todo.Progress{
 					Todo:       true,
 					InProgress: false,
 					Finished:   false,
 				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := todo.NewTodo(tt.args.object)
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("expected err: %q, but didn't get one\n", tt.expectedErr)
+				}
+				if !strings.Contains(err.Error(), tt.expectedErr.Error()) {
+					t.Fatalf("expected err: %q, to contain: %q, but did not\n", err, tt.expectedErr)
+				}
+				return
 			}
-
-			if !reflect.DeepEqual(got, want) {
-				byteArray, _ := json.MarshalIndent(got, "", "\t")
-				got := string(byteArray)
-				t.Errorf("NewTodo() = \n%s,\n want: %#v\n",
-					got,
-					want,
-				)
+			if err != nil {
+				t.Fatalf("unexpected error: %q\n", err)
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewTodo() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
-}
-
-// Apparently this is a performant way of generating a random string
-// acording to https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-func randStringBytes(n int) string {
-	// this is to be used in the test case where a random string is mocked like
-	// the mongoDb _id field
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = letterBytes[rand.Intn(len(letterBytes))]
-	}
-	return string(b)
 }

@@ -1,6 +1,10 @@
 package todo
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 type Progress struct {
 	Todo       bool
@@ -43,19 +47,29 @@ func (p *Progress) MakeSureOneOfThree() error {
 type Todo struct {
 	MongoID    string
 	PostNumber int
-	Date    time.Time
-	Title    string
-	Content  string
-	Progress *Progress
+	Date       time.Time
+	Title      string
+	Content    string
+	Progress   *Progress
 }
 
-func NewTodo(postNumber int, date time.Time, id, title, content string) *Todo {
-	return &Todo{
-		MongoID:    id,
-		PostNumber: postNumber,
-		Date:       date,
-		Title:      title,
-		Content:    content,
-		Progress:   NewProgress(),
+func NewTodo(object json.RawMessage) (*Todo, error) {
+	var returnVal Todo
+	var aux map[string]interface{}
+
+	err := json.Unmarshal(object, &aux)
+	if err != nil {
+		return &Todo{}, fmt.Errorf("%v: %v\n", TodoInstantiationErr, err)
 	}
+
+	mongoID, ok := aux["_id"]
+	if ok {
+		returnVal.MongoID = mongoID.(string)
+	}
+	err = json.Unmarshal(object, &returnVal)
+	if err != nil {
+		return &Todo{}, fmt.Errorf("%v: %v\n", TodoInstantiationErr, err)
+	}
+
+	return &returnVal, nil
 }
