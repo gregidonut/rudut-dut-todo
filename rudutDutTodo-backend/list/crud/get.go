@@ -13,12 +13,12 @@ func GetList(DBCont contact.DBContainer) ([]todo.Todo, error) {
 	mongoURIenvVal, err := contact.GetMongoUriFromEnv()
 	if err != nil {
 		return []todo.Todo{},
-			fmt.Errorf("%v: %v", MongoContactErr, err)
+			fmt.Errorf("%v: %v", GetErr, err)
 	}
 	client, err := contact.PingMongo(*mongoURIenvVal)
 	if err != nil {
 		return []todo.Todo{},
-			fmt.Errorf("%v: %v", MongoContactErr, err)
+			fmt.Errorf("%v: %v", GetErr, err)
 	}
 
 	todoLists := client.Database(DBCont.DBName).Collection(DBCont.CollectionName)
@@ -27,7 +27,7 @@ func GetList(DBCont contact.DBContainer) ([]todo.Todo, error) {
 	cursor, err := todoLists.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return []todo.Todo{},
-			fmt.Errorf("%v: %v", MongoContactErr, err)
+			fmt.Errorf("%v: %v", GetErr, err)
 	}
 
 	// convert the cursor result to bson
@@ -35,7 +35,7 @@ func GetList(DBCont contact.DBContainer) ([]todo.Todo, error) {
 	err = cursor.All(context.TODO(), &bsonResults)
 	if err != nil {
 		return []todo.Todo{},
-			fmt.Errorf("%v: %v", MongoContactErr, err)
+			fmt.Errorf("%v: %v", GetErr, err)
 	}
 
 	// convert []bson.M to []todo.Todo
@@ -44,7 +44,7 @@ func GetList(DBCont contact.DBContainer) ([]todo.Todo, error) {
 		todoRes, err := BsonMToTodo(bsonM)
 		if err != nil {
 			return []todo.Todo{},
-				fmt.Errorf("%v: %v", MongoContactErr, err)
+				fmt.Errorf("%v: %v", GetErr, err)
 		}
 		todoResults = append(todoResults, todoRes)
 	}
