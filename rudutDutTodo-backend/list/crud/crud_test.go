@@ -1,4 +1,4 @@
-package contact_test
+package crud_test
 
 import (
 	"log"
