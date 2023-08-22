@@ -21,10 +21,10 @@ func GetList(DBCont contact.DBContainer) ([]todo.Todo, error) {
 			fmt.Errorf("%v: %v", GetErr, err)
 	}
 
-	todoLists := client.Database(DBCont.DBName).Collection(DBCont.CollectionName)
+	todoListFromCollection := client.Database(DBCont.DBName).Collection(DBCont.CollectionName)
 
 	// retrieve all the documents that match the filter
-	cursor, err := todoLists.Find(context.TODO(), bson.D{})
+	cursor, err := todoListFromCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return []todo.Todo{},
 			fmt.Errorf("%v: %v", GetErr, err)
