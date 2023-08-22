@@ -54,7 +54,6 @@ func TestGetList(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		setupEnvVar bool
 		envVarValue string
 		dbContArgs  dbContArgs
 		wantErr     bool
@@ -62,7 +61,6 @@ func TestGetList(t *testing.T) {
 	}{
 		{
 			name:        "get from testDB.test-todo-list.first-item",
-			setupEnvVar: true,
 			envVarValue: mongoHandles.DBs[0].Info.URI,
 			dbContArgs: dbContArgs{
 				DBName: mongoHandles.DBs[0].Info.Handles[0].Name,
@@ -99,6 +97,9 @@ func TestGetList(t *testing.T) {
 				tt.dbContArgs.DBName,
 				tt.dbContArgs.DBCollection.CName,
 			)
+			if err != nil {
+				t.Fatalf("having trouble creating DBContainer: %q\n", err)
+			}
 
 			got, err := crud.GetList(*dbCont)
 			if tt.wantErr {
@@ -111,7 +112,7 @@ func TestGetList(t *testing.T) {
 				return
 			}
 			if err != nil {
-				t.Fatalf("error pinging db: %q\n", err)
+				t.Fatalf("unexpected err: %q\n", err)
 			}
 
 			mockTodoItem := tt.dbContArgs.DBCollection.Items
